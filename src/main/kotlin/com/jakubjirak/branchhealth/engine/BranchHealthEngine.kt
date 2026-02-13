@@ -1,0 +1,163 @@
+package com.jakubjirak.branchhealth.engine
+
+import com.jakubjirak.branchhealth.analyzer.ActivityAnalyzer
+import com.jakubjirak.branchhealth.analyzer.BranchAgeAnalyzer
+import com.jakubjirak.branchhealth.analyzer.ConflictPredictor
+import com.jakubjirak.branchhealth.analyzer.RebaseAdvisor
+import com.jakubjirak.branchhealth.licensing.FreemiumGate
+import com.jakubjirak.branchhealth.model.AheadBehind
+import com.jakubjirak.branchhealth.model.BranchHealth
+import com.jakubjirak.branchhealth.model.BranchInfo
+import com.jakubjirak.branchhealth.model.HealthLevel
+import com.intellij.openapi.diagnostic.Logger
+
+/**
+ * Orchestrates all analyzers to produce comprehensive branch health assessments.
+ * Caches results and respects freemium limits.
+ */
+class BranchHealthEngine(
+    private val staleThresholdDays: Long = BranchAgeAnalyzer.DEFAULT_STALE_THRESHOLD_DAYS,
+    private val freemiumGate: FreemiumGate? = null,
+) {
+
+    private val ageAnalyzer = BranchAgeAnalyzer(staleThresholdDays)
+    private val activityAnalyzer = ActivityAnalyzer()
+    private val conflictPredictor = ConflictPredictor()
+    private val rebaseAdvisor = RebaseAdvisor()
+
+    private val cache = mutableMapOf<String, BranchHealth>()
+
+    private fun getFreemiumGate(): FreemiumGate = freemiumGate ?: FreemiumGate.getInstance()
+
+    /**
+     * Analyze a single branch and produce a health assessment.
+     */
+    fun analyzeBranch(
+        branch: BranchInfo,
+        changedFiles: Set<String> = emptySet(),
+        targetBranch: String = "main",
+        targetFiles: Set<String> = emptySet(),
+    ): BranchHealth {
+        val ageDays = ageAnalyzer.calculateAgeDays(branch.lastCommitDate)
+        val activityRate = activityAnalyzer.calculateActivityRate(branch.commitCount, ageDays.coerceAtLeast(1))
+        val issues = mutableListOf<String>()
+
+        // Age penalty
+        val agePenalty = ageAnalyzer.calculateAgePenalty(ageDays)
+        if (ageAnalyzer.isStale(branch.lastCommitDate)) {
+            issues.add("Branch is stale (${ageDays} days since last commit)")
+        }
+
+        // Activity score
+        val activityScore = activityAnalyzer.calculateActivityScore(activityRate)
+        if (activityAnalyzer.classifyActivity(activityRate) == ActivityAnalyzer.ActivityTrend.INACTIVE) {
+            issues.add("No recent activity detected")
+        }
+
+        // Behind penalty
+        val behindPenalty = rebaseAdvisor.calculateBehindPenalty(branch.aheadBehind.behind)
+        if (branch.aheadBehind.behind > 0) {
+            issues.add("Branch is ${branch.aheadBehind.behind} commits behind ${targetBranch}")
+        }
+
+        // Conflict risk (paid feature)
+        val gate = getFreemiumGate()
+        val conflictRisk = if (gate.isPaidFeatureAvailable(FreemiumGate.FEATURE_CONFLICT_PREDICTION) &&
+            changedFiles.isNotEmpty()
+        ) {
+            val risk = conflictPredictor.predictConflict(branch.name, changedFiles, targetBranch, targetFiles)
+            if (risk != null && risk.riskScore > 0.3) {
+                issues.add("Potential conflicts with ${risk.conflictingBranch} (${risk.filePaths.size} files)")
+            }
+            risk
+        } else {
+            null
+        }
+
+        val conflictPenalty = conflictRisk?.let { conflictPredictor.calculateConflictPenalty(it.riskScore) } ?: 0
+
+        // Rebase advice (paid feature)
+        val rebaseAdvice = if (gate.isPaidFeatureAvailable(FreemiumGate.FEATURE_REBASE_ADVISOR)) {
+            rebaseAdvisor.advise(branch.aheadBehind)
+        } else {
+            null
+        }
+
+        // Calculate overall health score (start at 100, subtract penalties, add bonuses)
+        val healthScore = (BASE_SCORE - agePenalty + activityScore - behindPenalty - conflictPenalty)
+            .coerceIn(MIN_SCORE, MAX_SCORE)
+
+        val level = classifyHealthScore(healthScore)
+
+        val health = BranchHealth(
+            branch = branch,
+            healthScore = healthScore,
+            level = level,
+            issues = issues,
+            ageDays = ageDays,
+            activityRate = activityRate,
+            conflictRisk = conflictRisk,
+            rebaseAdvice = rebaseAdvice,
+        )
+
+        cache[branch.name] = health
+        return health
+    }
+
+    /**
+     * Analyze multiple branches, respecting freemium branch limits.
+     */
+    fun analyzeAll(
+        branches: List<BranchInfo>,
+        changedFilesMap: Map<String, Set<String>> = emptyMap(),
+        targetBranch: String = "main",
+        targetFiles: Set<String> = emptySet(),
+    ): List<BranchHealth> {
+        val maxBranches = getFreemiumGate().getMaxBranches()
+        val effectiveBranches = branches.take(maxBranches)
+
+        LOG.info("Analyzing ${effectiveBranches.size} of ${branches.size} branches (limit: $maxBranches)")
+
+        return effectiveBranches.map { branch ->
+            analyzeBranch(
+                branch = branch,
+                changedFiles = changedFilesMap[branch.name] ?: emptySet(),
+                targetBranch = targetBranch,
+                targetFiles = targetFiles,
+            )
+        }
+    }
+
+    /**
+     * Get cached result for a branch.
+     */
+    fun getCached(branchName: String): BranchHealth? = cache[branchName]
+
+    /**
+     * Clear the cache.
+     */
+    fun clearCache() {
+        cache.clear()
+    }
+
+    private fun classifyHealthScore(score: Int): HealthLevel {
+        return when {
+            score >= HEALTHY_THRESHOLD -> HealthLevel.HEALTHY
+            score >= AGING_THRESHOLD -> HealthLevel.AGING
+            score >= STALE_THRESHOLD -> HealthLevel.STALE
+            else -> HealthLevel.DEAD
+        }
+    }
+
+    companion object {
+        private val LOG = Logger.getInstance(BranchHealthEngine::class.java)
+
+        private const val BASE_SCORE = 100
+        private const val MIN_SCORE = 0
+        private const val MAX_SCORE = 100
+
+        private const val HEALTHY_THRESHOLD = 75
+        private const val AGING_THRESHOLD = 50
+        private const val STALE_THRESHOLD = 25
+    }
+}

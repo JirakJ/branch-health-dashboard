@@ -1,0 +1,75 @@
+<idea-plugin>
+  <id>com.jakubjirak.branchhealth</id>
+  <name>Branch Health Dashboard</name>
+  <vendor email="jakub@jirak.dev" url="https://github.com/jakubjirak">Jakub Jirák</vendor>
+
+  <description><![CDATA[
+    <h2>Branch Health Dashboard</h2>
+    <p>Monitors the health of Git branches in your repository: age, activity, merge conflict potential,
+    stale branch detection, and rebase vs merge recommendations.</p>
+
+    <h3>Features</h3>
+    <ul>
+        <li><b>Branch health scoring</b> — 0-100 health score with HEALTHY/AGING/STALE/DEAD levels</li>
+        <li><b>Age tracking</b> — identifies stale branches with configurable thresholds</li>
+        <li><b>Activity analysis</b> — commits per time period and activity trends</li>
+        <li><b>Conflict prediction</b> — finds common changed files across branches (Pro)</li>
+        <li><b>Rebase advisor</b> — recommends rebase vs merge based on divergence (Pro)</li>
+        <li><b>Cleanup actions</b> — delete stale branches with confirmation (Pro)</li>
+        <li><b>Notifications</b> — stale branch warnings and conflict risk alerts</li>
+    </ul>
+
+    <h3>Free vs Pro</h3>
+    <ul>
+        <li><b>Free:</b> health score, age tracking, activity analysis (max 5 branches)</li>
+        <li><b>Pro:</b> unlimited branches, conflict prediction, rebase advisor, cleanup automation</li>
+    </ul>
+    ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+  <depends>Git4Idea</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Tool window -->
+    <toolWindow
+        id="Branch Health"
+        anchor="bottom"
+        factoryClass="com.jakubjirak.branchhealth.ui.BranchHealthToolWindowFactory"
+        icon="AllIcons.Vcs.Branch"/>
+
+    <!-- Settings page -->
+    <applicationConfigurable
+        id="com.jakubjirak.branchhealth.settings"
+        parentId="tools"
+        displayName="Branch Health Dashboard"
+        instance="com.jakubjirak.branchhealth.settings.BranchHealthConfigurable"/>
+
+    <!-- Persistent settings -->
+    <applicationService
+        serviceImplementation="com.jakubjirak.branchhealth.settings.BranchHealthSettings"/>
+
+    <!-- Notification group -->
+    <notificationGroup
+        id="Branch Health Dashboard"
+        displayType="BALLOON"
+        toolWindowId="Branch Health"/>
+  </extensions>
+
+  <actions>
+    <action id="com.jakubjirak.branchhealth.ScanBranchesAction"
+        class="com.jakubjirak.branchhealth.actions.ScanBranchesAction"
+        text="Scan Branch Health"
+        description="Scan all branches and calculate health scores"
+        icon="AllIcons.Actions.Refresh">
+      <add-to-group group-id="VcsGroups" anchor="last"/>
+    </action>
+
+    <action id="com.jakubjirak.branchhealth.CleanupBranchAction"
+        class="com.jakubjirak.branchhealth.actions.CleanupBranchAction"
+        text="Cleanup Stale Branches"
+        description="Delete stale branches with confirmation"
+        icon="AllIcons.Actions.GC">
+      <add-to-group group-id="VcsGroups" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>
