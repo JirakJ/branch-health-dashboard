@@ -8,6 +8,7 @@ import com.jakubjirak.branchhealth.settings.BranchHealthSettings
 import com.jakubjirak.branchhealth.ui.BranchHealthPanel
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.ProgressManager
@@ -20,6 +21,8 @@ import git4idea.commands.GitLineHandler
 import java.time.Instant
 
 class ScanBranchesAction : AnAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
