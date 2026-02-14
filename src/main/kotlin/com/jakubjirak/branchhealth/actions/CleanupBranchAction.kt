@@ -3,6 +3,7 @@ package com.jakubjirak.branchhealth.actions
 import com.jakubjirak.branchhealth.licensing.FreemiumGate
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
@@ -12,6 +13,8 @@ import git4idea.commands.GitCommand
 import git4idea.commands.GitLineHandler
 
 class CleanupBranchAction : AnAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
