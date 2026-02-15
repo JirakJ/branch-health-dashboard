@@ -5,27 +5,35 @@
   <vendor email="jakub@jirak.dev" url="https://github.com/jakubjirak">Jakub Jirák</vendor>
 
   <description><![CDATA[
-    <h2>Branch Health Dashboard</h2>
-    <p>Monitors the health of Git branches in your repository: age, activity, merge conflict potential,
-    stale branch detection, and rebase vs merge recommendations.</p>
+<h2>Branch Health Dashboard</h2>
+<p>
+  Stop guessing which branches need attention. Branch Health Dashboard gives every Git branch a health
+  score from 0 to 100, predicts merge conflicts before they happen, and recommends optimal merge strategies
+  — all in a single tool window.
+</p>
 
-    <h3>Features</h3>
-    <ul>
-        <li><b>Branch health scoring</b> — 0-100 health score with HEALTHY/AGING/STALE/DEAD levels</li>
-        <li><b>Age tracking</b> — identifies stale branches with configurable thresholds</li>
-        <li><b>Activity analysis</b> — commits per time period and activity trends</li>
-        <li><b>Conflict prediction</b> — finds common changed files across branches (Pro)</li>
-        <li><b>Rebase advisor</b> — recommends rebase vs merge based on divergence (Pro)</li>
-        <li><b>Cleanup actions</b> — delete stale branches with confirmation (Pro)</li>
-        <li><b>Notifications</b> — stale branch warnings and conflict risk alerts</li>
-    </ul>
+<h2>Key Features</h2>
+<ul>
+  <li><b>Health Scoring (0–100)</b> — Composite score based on age, activity, divergence, and conflicts</li>
+  <li><b>Stale Branch Detection</b> — Identify and clean up abandoned branches automatically</li>
+  <li><b>Conflict Prediction</b> — Proactive warnings when branches are heading toward merge conflicts</li>
+  <li><b>Merge Strategy Advisor</b> — Recommends rebase vs. merge based on branch topology</li>
+  <li><b>Activity Tracking</b> — Visualize commit frequency and recency per branch</li>
+  <li><b>Notifications</b> — Alerts when branch health drops below configured thresholds</li>
+</ul>
 
-    <h3>Free vs Pro</h3>
-    <ul>
-        <li><b>Free:</b> health score, age tracking, activity analysis (max 5 branches)</li>
-        <li><b>Pro:</b> unlimited branches, conflict prediction, rebase advisor, cleanup automation</li>
-    </ul>
-    ]]></description>
+<h2>Why Branch Health Dashboard?</h2>
+<p>
+  Long-lived branches are a top source of integration pain. This plugin gives teams visibility into branch
+  health and actionable guidance to keep Git workflows clean.
+</p>
+
+<h2>Free vs Pro</h2>
+<ul>
+  <li><b>Free:</b> Health score, age tracking, activity analysis for up to 5 branches</li>
+  <li><b>Pro:</b> Unlimited branches, conflict prediction, rebase advisor, auto-cleanup rules, team notifications, and branch policy enforcement</li>
+</ul>
+]]></description>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>Git4Idea</depends>
