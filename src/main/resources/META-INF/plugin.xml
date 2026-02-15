@@ -1,5 +1,6 @@
 <idea-plugin>
   <id>com.jakubjirak.branchhealth</id>
+    <product-descriptor code="PBRANCHHEALTH" release-date="20260215" release-version="20262" optional="true"/>
   <name>Branch Health Dashboard</name>
   <vendor email="jakub@jirak.dev" url="https://github.com/jakubjirak">Jakub Jirák</vendor>
 
