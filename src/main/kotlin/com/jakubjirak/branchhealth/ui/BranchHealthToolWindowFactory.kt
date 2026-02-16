@@ -53,20 +53,11 @@ class BranchHealthPanel(private val project: Project) : JPanel(BorderLayout()) {
 
         val scanButton = JButton("Scan Branches").apply {
             addActionListener {
-                // Trigger scan via action system
                 val actionManager = com.intellij.openapi.actionSystem.ActionManager.getInstance()
                 val action = actionManager.getAction("com.jakubjirak.branchhealth.ScanBranchesAction")
                 if (action != null) {
                     val dataContext = com.intellij.openapi.actionSystem.impl.SimpleDataContext.getProjectContext(project)
-                    val event = com.intellij.openapi.actionSystem.AnActionEvent(
-                        null,
-                        dataContext,
-                        com.intellij.openapi.actionSystem.ActionPlaces.TOOLWINDOW_CONTENT,
-                        action.templatePresentation.clone(),
-                        actionManager,
-                        0,
-                    )
-                    action.actionPerformed(event)
+                    actionManager.tryToExecute(action, null, null, com.intellij.openapi.actionSystem.ActionPlaces.TOOLWINDOW_CONTENT, true)
                 }
             }
         }
