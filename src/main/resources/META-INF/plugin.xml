@@ -4,8 +4,7 @@
   <name>Branch Health Dashboard</name>
   <vendor email="support@jakubjirak.com" url="https://github.com/jakubjirak">Jakub Jirák</vendor>
 
-  <description><![CDATA[
-<h2>Monitor, score, and clean up your Git branches — right inside your IDE</h2>
+  <description><![CDATA[<h2>Monitor, score, and clean up your Git branches — right inside your IDE</h2>
 
 <p>
   Branch Health Dashboard gives every Git branch a health score from 0 to 100.
@@ -36,7 +35,6 @@
   <li><b>All branches in one view</b> — Local and remote branches displayed together with full metrics.</li>
 </ul>
 
-<h3>Pro Features</h3>
 <ul>
   <li><b>Conflict prediction</b> — Detects common files across branches and assigns a risk level: LOW, MEDIUM, HIGH, or CRITICAL.</li>
   <li><b>Rebase advisor</b> — Recommends the optimal merge strategy for each branch: REBASE, MERGE, or EITHER.</li>
@@ -44,37 +42,6 @@
   <li><b>Orphan commit detection</b> — Finds commits that are no longer reachable from any branch.</li>
   <li><b>Enhanced notifications</b> — Team notifications and branch policy enforcement to keep everyone aligned.</li>
 </ul>
-
-<h3>Pricing</h3>
-<table>
-  <tr>
-    <th>Free</th>
-    <th>Pro — $6/month</th>
-  </tr>
-  <tr>
-    <td>
-      <ul>
-        <li>Health score, age tracking, activity analysis</li>
-        <li>Stale branch notifications</li>
-        <li>Branch comparison (ahead/behind)</li>
-        <li>Tool window dashboard</li>
-        <li>Up to 5 branches</li>
-      </ul>
-    </td>
-    <td>
-      <ul>
-        <li>Everything in Free</li>
-        <li>Unlimited branches</li>
-        <li>Conflict prediction</li>
-        <li>Rebase advisor</li>
-        <li>Cleanup automation</li>
-        <li>Orphan commit detection</li>
-        <li>Enhanced &amp; team notifications</li>
-        <li>Branch policy enforcement</li>
-      </ul>
-    </td>
-  </tr>
-</table>
 
 <h3>Requirements</h3>
 <ul>
@@ -88,8 +55,7 @@
   <li><b>Documentation:</b> <a href="https://github.com/JirakJ/branch-health-dashboard/docs">github.com/JirakJ/branch-health-dashboard/docs</a></li>
   <li><b>Issue tracker:</b> <a href="https://github.com/JirakJ/branch-health-dashboard/issues">github.com/JirakJ/branch-health-dashboard/issues</a></li>
   <li><b>Email:</b> <a href="mailto:support@jakubjirak.com">support@jakubjirak.com</a></li>
-</ul>
-    ]]></description>
+</ul>]]></description>
 
   <depends>com.intellij.modules.platform</depends>
   <depends>Git4Idea</depends>
@@ -118,7 +84,10 @@
         id="Branch Health Dashboard"
         displayType="BALLOON"
         toolWindowId="Branch Health"/>
-  </extensions>
+  
+        <notificationGroup id="Branch Health Dashboard Feedback" displayType="BALLOON"/>
+        <projectActivity implementation="com.jakubjirak.branchhealth.feedback.FeedbackNotifier"/>
+    </extensions>
 
   <actions>
     <action id="com.jakubjirak.branchhealth.ScanBranchesAction"
