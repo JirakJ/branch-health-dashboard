@@ -1,6 +1,5 @@
 package com.jakubjirak.branchhealth.engine
 
-import com.jakubjirak.branchhealth.licensing.FreemiumGate
 import com.jakubjirak.branchhealth.model.AheadBehind
 import com.jakubjirak.branchhealth.model.BranchInfo
 import com.jakubjirak.branchhealth.model.HealthLevel
@@ -12,7 +11,7 @@ import java.time.temporal.ChronoUnit
 
 class BranchHealthEngineTest {
 
-    private val engine = BranchHealthEngine(freemiumGate = FreemiumGate())
+    private val engine = BranchHealthEngine()
 
     private fun createBranch(
         name: String = "feature/test",

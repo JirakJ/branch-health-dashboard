@@ -1,6 +1,5 @@
 package com.jakubjirak.branchhealth.actions
 
-import com.jakubjirak.branchhealth.licensing.FreemiumGate
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ActionUpdateThread
@@ -18,16 +17,6 @@ class CleanupBranchAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-
-        val freemiumGate = FreemiumGate.getInstance()
-        if (!freemiumGate.isPaidFeatureAvailable(FreemiumGate.FEATURE_CLEANUP_AUTOMATION)) {
-            Messages.showInfoMessage(
-                project,
-                "Branch cleanup automation is a Pro feature. Upgrade to unlock.",
-                "Upgrade to Branch Health Pro",
-            )
-            return
-        }
 
         val mergedBranches = findMergedBranches(project) ?: return
 

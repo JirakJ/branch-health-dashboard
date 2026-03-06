@@ -4,7 +4,6 @@ import com.jakubjirak.branchhealth.analyzer.ActivityAnalyzer
 import com.jakubjirak.branchhealth.analyzer.BranchAgeAnalyzer
 import com.jakubjirak.branchhealth.analyzer.ConflictPredictor
 import com.jakubjirak.branchhealth.analyzer.RebaseAdvisor
-import com.jakubjirak.branchhealth.licensing.FreemiumGate
 import com.jakubjirak.branchhealth.model.AheadBehind
 import com.jakubjirak.branchhealth.model.BranchHealth
 import com.jakubjirak.branchhealth.model.BranchInfo
@@ -13,11 +12,10 @@ import com.intellij.openapi.diagnostic.Logger
 
 /**
  * Orchestrates all analyzers to produce comprehensive branch health assessments.
- * Caches results and respects freemium limits.
+ * Caches results for efficient lookups.
  */
 class BranchHealthEngine(
     private val staleThresholdDays: Long = BranchAgeAnalyzer.DEFAULT_STALE_THRESHOLD_DAYS,
-    private val freemiumGate: FreemiumGate? = null,
 ) {
 
     private val ageAnalyzer = BranchAgeAnalyzer(staleThresholdDays)
@@ -26,8 +24,6 @@ class BranchHealthEngine(
     private val rebaseAdvisor = RebaseAdvisor()
 
     private val cache = mutableMapOf<String, BranchHealth>()
-
-    private fun getFreemiumGate(): FreemiumGate = freemiumGate ?: FreemiumGate.getInstance()
 
     /**
      * Analyze a single branch and produce a health assessment.
@@ -60,11 +56,8 @@ class BranchHealthEngine(
             issues.add("Branch is ${branch.aheadBehind.behind} commits behind ${targetBranch}")
         }
 
-        // Conflict risk (paid feature)
-        val gate = getFreemiumGate()
-        val conflictRisk = if (gate.isPaidFeatureAvailable(FreemiumGate.FEATURE_CONFLICT_PREDICTION) &&
-            changedFiles.isNotEmpty()
-        ) {
+        // Conflict risk
+        val conflictRisk = if (changedFiles.isNotEmpty()) {
             val risk = conflictPredictor.predictConflict(branch.name, changedFiles, targetBranch, targetFiles)
             if (risk != null && risk.riskScore > 0.3) {
                 issues.add("Potential conflicts with ${risk.conflictingBranch} (${risk.filePaths.size} files)")
@@ -76,12 +69,8 @@ class BranchHealthEngine(
 
         val conflictPenalty = conflictRisk?.let { conflictPredictor.calculateConflictPenalty(it.riskScore) } ?: 0
 
-        // Rebase advice (paid feature)
-        val rebaseAdvice = if (gate.isPaidFeatureAvailable(FreemiumGate.FEATURE_REBASE_ADVISOR)) {
-            rebaseAdvisor.advise(branch.aheadBehind)
-        } else {
-            null
-        }
+        // Rebase advice
+        val rebaseAdvice = rebaseAdvisor.advise(branch.aheadBehind)
 
         // Calculate overall health score (start at 100, subtract penalties, add bonuses)
         val healthScore = (BASE_SCORE - agePenalty + activityScore - behindPenalty - conflictPenalty)
@@ -113,12 +102,9 @@ class BranchHealthEngine(
         targetBranch: String = "main",
         targetFiles: Set<String> = emptySet(),
     ): List<BranchHealth> {
-        val maxBranches = getFreemiumGate().getMaxBranches()
-        val effectiveBranches = branches.take(maxBranches)
+        LOG.info("Analyzing ${branches.size} branches")
 
-        LOG.info("Analyzing ${effectiveBranches.size} of ${branches.size} branches (limit: $maxBranches)")
-
-        return effectiveBranches.map { branch ->
+        return branches.map { branch ->
             analyzeBranch(
                 branch = branch,
                 changedFiles = changedFilesMap[branch.name] ?: emptySet(),
