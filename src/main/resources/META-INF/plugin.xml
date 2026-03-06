@@ -1,6 +1,5 @@
 <idea-plugin>
   <id>com.jakubjirak.branchhealth</id>
-    <product-descriptor code="PBRANCHHEALTH" release-date="20260215" release-version="20262" optional="true"/>
   <name>Branch Health Dashboard</name>
   <vendor email="support@jakubjirak.com" url="https://github.com/jakubjirak">Jakub Jirák</vendor>
 
@@ -17,7 +16,7 @@
 <ul>
   <li><b>Health score (0–100)</b> — A single number that tells you how healthy each branch is, based on age, activity, behind-count, and conflict risk.</li>
   <li><b>Color-coded status</b> — Healthy (≥75, green), Aging (≥50, yellow), Stale (≥25, orange), Dead (&lt;25, red).</li>
-  <li><b>Score breakdown</b> — Age (up to −40 pts), Activity (+10 to −10 pts), Behind count (up to −15 pts), Conflict risk (up to −20 pts, Pro).</li>
+  <li><b>Score breakdown</b> — Age (up to −40 pts), Activity (+10 to −10 pts), Behind count (up to −15 pts), Conflict risk (up to −20 pts).</li>
 </ul>
 
 <h3>Branch Monitoring</h3>
@@ -115,9 +114,9 @@
             <li><b>Activity Heatmap</b> - Visualize commit frequency and trends per branch</li>
             <li><b>Branch Comparison</b> - Ahead/behind visualization against base branch</li>
             <li><b>Health Notifications</b> - Balloon alerts when branch health drops below thresholds</li>
-            <li><b>Conflict Prediction</b> - Detect common files across branches and calculate merge risk (Pro)</li>
-            <li><b>Rebase Advisor</b> - Get rebase vs merge recommendations based on branch topology (Pro)</li>
-            <li><b>Cleanup Automation</b> - Batch-delete merged branches with dry-run mode and branch protection (Pro)</li>
+            <li><b>Conflict Prediction</b> - Detect common files across branches and calculate merge risk</li>
+            <li><b>Rebase Advisor</b> - Get rebase vs merge recommendations based on branch topology</li>
+            <li><b>Cleanup Automation</b> - Batch-delete merged branches with dry-run mode and branch protection</li>
         </ul>
     ]]></change-notes>
 </idea-plugin>

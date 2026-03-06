@@ -8,23 +8,18 @@
 
 ## ✨ Features
 
-### Free Tier
 - **Branch age tracking** — color-coded health levels: 🟢 Healthy (≤7 days), 🟡 Aging (7–30 days), 🔴 Stale (>30 days), ⚫ Dead
-- **Health score** — 0–100 score calculated from age, activity, and behind-count penalties
+- **Health score** — 0–100 score calculated from age, activity, behind-count, and conflict risk penalties
 - **Activity heatmap** — commits-per-day rate with trend indicators (HIGH / MODERATE / LOW / INACTIVE)
 - **Stale branch detection** — configurable threshold (7 / 14 / 30 / 60 / 90 days)
 - **Branch comparison** — ahead/behind visualization against base branch
 - **Tool window** — sortable table with health, age, activity columns and filter by status
-- **Notifications** — balloon alerts for stale branches and scan completion summaries
-- **Up to 5 branches** monitored simultaneously
-
-### Pro Tier ($6/month)
+- **Notifications** — balloon alerts for stale branches, scan completion summaries, and conflict risk warnings
 - **Unlimited branches** — no cap on monitored branches
 - **Conflict prediction** — detects common files across branches and calculates risk score (LOW / MEDIUM / HIGH / CRITICAL)
 - **Rebase advisor** — ahead/behind analysis with REBASE / MERGE / EITHER recommendations
 - **Cleanup automation** — batch-delete merged branches with dry-run mode (protects main, master, develop)
 - **Orphan commit detection** — find commits not reachable from any branch
-- **Enhanced notifications** — conflict risk warnings with affected file counts
 
 ## 📦 Installation
 
@@ -45,7 +40,7 @@
 3. Click **Scan Branches** to analyze all branches
 4. Review the health scores and status indicators in the table
 5. Use the filter dropdown to focus on **Stale** or **Dead** branches
-6. *(Pro)* Run **Cleanup Stale Branches** from the VCS menu to batch-delete merged branches
+6. Run **Cleanup Stale Branches** from the VCS menu to batch-delete merged branches
 
 ## ⚙️ Configuration
 
@@ -69,7 +64,7 @@ The health score (0–100) is computed from multiple factors:
 | Branch age | Up to −40 points (−15 aging, −25 stale) |
 | Activity rate | +10 (HIGH), +5 (MODERATE), −10 (INACTIVE) |
 | Behind count | Up to −15 points based on how far behind the base branch |
-| Conflict risk *(Pro)* | Up to −20 points based on common file overlap |
+| Conflict risk | Up to −20 points based on common file overlap |
 
 **Thresholds:** ≥75 = 🟢 Healthy, ≥50 = 🟡 Aging, ≥25 = 🔴 Stale, <25 = ⚫ Dead
 
@@ -77,7 +72,7 @@ The health score (0–100) is computed from multiple factors:
 - **Manual:** Click **Scan Branches** in the tool window or use **VCS** → **Scan Branch Health**
 - **Automatic:** Runs at the configured scan interval in the background
 
-### Cleaning Up *(Pro)*
+### Cleaning Up
 - **VCS** → **Cleanup Stale Branches**
 - Shows a confirmation dialog listing branches to delete
 - Automatically protects `main`, `master`, and `develop` from deletion

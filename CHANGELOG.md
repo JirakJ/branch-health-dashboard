@@ -31,9 +31,8 @@
 - Balloon notifications for stale branches and scan completion summaries
 - Settings panel (Tools → Branch Health Dashboard) for threshold, interval, ignored branches, and notifications
 - Scan Branches action (VCS menu)
-- **Pro:** Conflict prediction with risk scoring (LOW / MEDIUM / HIGH / CRITICAL)
-- **Pro:** Rebase advisor with REBASE / MERGE / EITHER recommendations
-- **Pro:** Cleanup automation for batch-deleting merged branches (protects main/master/develop)
-- **Pro:** Orphan commit detection
-- **Pro:** Unlimited branch monitoring (Free tier: 5 branches)
-- Freemium licensing gate with Free and Pro ($6/month) tiers
+- Conflict prediction with risk scoring (LOW / MEDIUM / HIGH / CRITICAL)
+- Rebase advisor with REBASE / MERGE / EITHER recommendations
+- Cleanup automation for batch-deleting merged branches (protects main/master/develop)
+- Orphan commit detection
+- Unlimited branch monitoring
