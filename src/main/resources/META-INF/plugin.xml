@@ -2,6 +2,8 @@
   <id>com.jakubjirak.branchhealth</id>
   <name>Branch Health Dashboard</name>
   <vendor email="support@jakubjirak.com" url="https://github.com/jakubjirak">Jakub Jirák</vendor>
+    <product-descriptor code="PBRANCHHEALTHDA" release-date="20260418" release-version="20263" optional="true"/>
+
 
   <description><![CDATA[<h2>Monitor, score, and clean up your Git branches — right inside your IDE</h2>
 
