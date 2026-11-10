@@ -56,7 +56,6 @@ class BranchHealthPanel(private val project: Project) : JPanel(BorderLayout()) {
                 val actionManager = com.intellij.openapi.actionSystem.ActionManager.getInstance()
                 val action = actionManager.getAction("com.jakubjirak.branchhealth.ScanBranchesAction")
                 if (action != null) {
-                    val dataContext = com.intellij.openapi.actionSystem.impl.SimpleDataContext.getProjectContext(project)
                     actionManager.tryToExecute(action, null, null, com.intellij.openapi.actionSystem.ActionPlaces.TOOLWINDOW_CONTENT, true)
                 }
             }
