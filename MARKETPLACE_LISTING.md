@@ -61,24 +61,9 @@ Monitor Git branch health with age tracking, activity heatmaps, conflict predict
 - Accessible from the bottom panel ("Branch Health")
 - Actions: Scan Branch Health, Cleanup Stale Branches (VCS menu)
 
-#### 💎 Pricing Model
+#### 💎 Pricing
 
-**FREE (Community) — Up to 5 branches:**
-- Branch age tracking with color-coded status
-- Health score (0–100) for each branch
-- Activity heatmap with trend indicators
-- Stale branch detection with configurable thresholds
-- Ahead/behind comparison vs. base branch
-- Dashboard tool window with sorting and filtering
-- Balloon notifications for stale branches
-
-**PRO ($6/month or $60/year) — Unlimited branches:**
-- Everything in Free, with no branch limit
-- **Conflict Prediction** — detects file overlaps and calculates risk (LOW/MEDIUM/HIGH/CRITICAL)
-- **Rebase Advisor** — recommends REBASE, MERGE, or EITHER based on divergence analysis
-- **Cleanup Automation** — batch-delete merged branches with dry-run mode; protects main/master/develop
-- **Orphan Commit Detection** — finds commits unreachable from any branch
-- **Enhanced Notifications** — conflict risk warnings with affected file counts
+Free & open source (Apache-2.0) — every feature (including conflict prediction, rebase advisor, cleanup automation and orphan commit detection) is available to everyone, with no branch limit and no license needed.
 
 #### 🎓 Perfect For
 
@@ -110,11 +95,11 @@ Monitor Git branch health with age tracking, activity heatmaps, conflict predict
 1. **Dashboard overview** — Branch Health tool window showing color-coded health scores for all branches
 2. **Health score detail** — Expanded view of a single branch showing age, activity, and divergence metrics
 3. **Activity heatmap** — Commits-per-day visualization with trend indicators
-4. **Conflict prediction (Pro)** — Risk assessment showing file overlaps and conflict probability
-5. **Cleanup automation (Pro)** — Batch delete dialog with dry-run mode and protected branch list
+4. **Conflict prediction** — Risk assessment showing file overlaps and conflict probability
+5. **Cleanup automation** — Batch delete dialog with dry-run mode and protected branch list
 6. **Stale branch notification** — Balloon alert warning about an aging branch
 7. **Settings panel** — Configuration for stale threshold, scan interval, and ignored branches
-8. **Rebase advisor (Pro)** — Recommendation dialog showing REBASE vs. MERGE analysis
+8. **Rebase advisor** — Recommendation dialog showing REBASE vs. MERGE analysis
 
 ---
 
@@ -167,7 +152,6 @@ git branches, branch health, stale branches, branch cleanup, merge conflicts, co
 - [ ] Screenshots (minimum 5) captured and uploaded
 - [ ] Short description within 255-character limit
 - [ ] Full description formatted with HTML for marketplace rendering
-- [ ] Pricing tiers configured in JetBrains Marketplace portal
 - [ ] Vendor profile completed (name, email, website)
 - [ ] Support channels documented and active
 - [ ] Plugin tested on minimum supported IDE version (2024.3)
