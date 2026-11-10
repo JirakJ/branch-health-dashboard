@@ -24,34 +24,15 @@ Stale branches silently accumulate in every repository — creating merge confli
   <li><strong>Ahead/Behind Comparison</strong> — Visual comparison of every branch against its base, showing exactly how much divergence exists.</li>
   <li><strong>Dashboard Tool Window</strong> — Sortable, filterable table view of all branches with real-time status updates.</li>
   <li><strong>Stale Branch Notifications</strong> — Balloon alerts when branches cross your configured age thresholds.</li>
-  <li><strong>Conflict Prediction</strong> — Detects overlapping file changes across branches and calculates risk levels (LOW / MEDIUM / HIGH / CRITICAL). <em>(Pro)</em></li>
-  <li><strong>Rebase Advisor</strong> — Recommends REBASE, MERGE, or EITHER based on divergence analysis. <em>(Pro)</em></li>
-  <li><strong>Cleanup Automation</strong> — Batch-delete merged branches with dry-run mode. Protected branches (main, master, develop) are never touched. <em>(Pro)</em></li>
-  <li><strong>Orphan Commit Detection</strong> — Finds commits not reachable from any branch, so nothing gets lost. <em>(Pro)</em></li>
-  <li><strong>Enhanced Notifications</strong> — Conflict risk warnings with affected file counts and actionable suggestions. <em>(Pro)</em></li>
+  <li><strong>Conflict Prediction</strong> — Detects overlapping file changes across branches and calculates risk levels (LOW / MEDIUM / HIGH / CRITICAL).</li>
+  <li><strong>Rebase Advisor</strong> — Recommends REBASE, MERGE, or EITHER based on divergence analysis.</li>
+  <li><strong>Cleanup Automation</strong> — Batch-delete merged branches with dry-run mode. Protected branches (main, master, develop) are never touched.</li>
+  <li><strong>Orphan Commit Detection</strong> — Finds commits not reachable from any branch, so nothing gets lost.</li>
+  <li><strong>Enhanced Notifications</strong> — Conflict risk warnings with affected file counts and actionable suggestions.</li>
 </ul>
 
-<h3>Free Tier</h3>
-<p>Monitor up to <strong>5 branches</strong> at no cost:</p>
-<ul>
-  <li>Branch age tracking with color-coded health levels</li>
-  <li>Health score (0–100)</li>
-  <li>Activity heatmap with trends</li>
-  <li>Stale branch detection with configurable thresholds</li>
-  <li>Ahead/behind comparison vs. base branch</li>
-  <li>Dashboard tool window with sorting and filtering</li>
-  <li>Stale branch notifications</li>
-</ul>
-
-<h3>Pro Tier — $6/month (or $60/year)</h3>
-<ul>
-  <li><strong>Unlimited branches</strong> — no monitoring cap</li>
-  <li>Conflict prediction with risk scoring</li>
-  <li>Rebase advisor (REBASE vs. MERGE recommendation)</li>
-  <li>Cleanup automation — batch-delete merged branches with dry-run and protected branch safety</li>
-  <li>Orphan commit detection</li>
-  <li>Enhanced conflict risk notifications</li>
-</ul>
+<h3>Free &amp; Open Source</h3>
+<p>Every feature is free for everyone — no license, no tiers. Source code: <a href="https://github.com/JirakJ/branch-health-dashboard">GitHub</a> (Apache-2.0).</p>
 
 <h3>Getting Started</h3>
 <ol>
@@ -73,10 +54,8 @@ git, branches, merge-conflicts, cleanup, developer-tools
 Version Control
 
 ## Pricing
-| Tier | Price | Features |
-|------|-------|----------|
-| Free | $0 | Up to 5 branches, age tracking, health score, activity heatmap, stale detection, ahead/behind, notifications |
-| Pro | $6/month or $60/year | Unlimited branches, conflict prediction, rebase advisor, cleanup automation, orphan detection, enhanced notifications |
+
+Free & open source (Apache-2.0) — every feature is available to everyone, no license needed.
 
 ## Screenshots Needed
 1. **Dashboard Overview** — Branch Health tool window showing a table of branches with color-coded health indicators, scores, and age columns.

@@ -94,7 +94,7 @@ class BranchHealthEngine(
     }
 
     /**
-     * Analyze multiple branches, respecting freemium branch limits.
+     * Analyze multiple branches.
      */
     fun analyzeAll(
         branches: List<BranchInfo>,
