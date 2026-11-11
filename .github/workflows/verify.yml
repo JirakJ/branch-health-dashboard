@@ -2,13 +2,24 @@ name: Plugin Verification
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verify:
-    uses: JirakJ/intellij-plugin-verifier/.github/workflows/verify-plugin.yml@master
+    # GitHub-hosted runner on purpose: public repo + fork PRs must never reach a self-hosted machine.
+    uses: JirakJ/intellij-plugin-verifier/.github/workflows/verify-plugin.yml@ci/harden-verify
     with:
       gradle-plugin-version: "2.x"
-      runner-label: "rpi"
+      runner-label: "ubuntu-latest"
+      java-version: "17"
+      detekt: true
