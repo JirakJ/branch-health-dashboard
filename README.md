@@ -1,6 +1,6 @@
 # Branch Health Dashboard
 
-[![Build](https://github.com/JirakJ/branch-health-dashboard/actions/workflows/build.yml/badge.svg)](https://github.com/JirakJ/branch-health-dashboard/actions/workflows/build.yml)
+[![Plugin Verification](https://github.com/JirakJ/branch-health-dashboard/actions/workflows/verify.yml/badge.svg)](https://github.com/JirakJ/branch-health-dashboard/actions/workflows/verify.yml)
 [![Version](https://img.shields.io/badge/version-2026.8.0-blue.svg)](https://github.com/JirakJ/branch-health-dashboard/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
@@ -8,18 +8,14 @@
 
 ## ✨ Features
 
-- **Branch age tracking** — color-coded health levels: 🟢 Healthy (≤7 days), 🟡 Aging (7–30 days), 🔴 Stale (>30 days), ⚫ Dead
-- **Health score** — 0–100 score calculated from age, activity, behind-count, and conflict risk penalties
-- **Activity heatmap** — commits-per-day rate with trend indicators (HIGH / MODERATE / LOW / INACTIVE)
-- **Stale branch detection** — configurable threshold (7 / 14 / 30 / 60 / 90 days)
-- **Branch comparison** — ahead/behind visualization against base branch
-- **Tool window** — sortable table with health, age, activity columns and filter by status
-- **Notifications** — balloon alerts for stale branches, scan completion summaries, and conflict risk warnings
-- **Unlimited branches** — no cap on monitored branches
-- **Conflict prediction** — detects common files across branches and calculates risk score (LOW / MEDIUM / HIGH / CRITICAL)
-- **Rebase advisor** — ahead/behind analysis with REBASE / MERGE / EITHER recommendations
-- **Cleanup automation** — batch-delete merged branches with dry-run mode (protects main, master, develop)
-- **Orphan commit detection** — find commits not reachable from any branch
+- **Health score** — 0–100 per branch from age, 30-day activity, commits behind the base branch, and overlap with base-branch changes
+- **Status levels** — 🟢 Healthy (≥75), 🟡 Aging (≥50), 🔴 Stale (≥25), ⚫ Dead (<25)
+- **Ahead/behind** — against `main`, `master` or `develop` (local first, then `origin/`)
+- **Conflict risk** — files changed on both the branch and the base branch since their merge base
+- **Rebase advisor** — REBASE / MERGE / EITHER recommendation from the ahead/behind counts
+- **Tool window** — sortable table (health, age, activity, ahead/behind, conflict risk, advice) with a status filter
+- **Notifications** — scan summary and a stale-branch warning after each scan
+- **Cleanup** — delete local branches already merged into HEAD, after a confirmation listing them
 
 ## 📦 Installation
 
@@ -40,7 +36,7 @@
 3. Click **Scan Branches** to analyze all branches
 4. Review the health scores and status indicators in the table
 5. Use the filter dropdown to focus on **Stale** or **Dead** branches
-6. Run **Cleanup Stale Branches** from the VCS menu to batch-delete merged branches
+6. Run **Cleanup Stale Branches** from the VCS menu to delete branches already merged into HEAD
 
 ## ⚙️ Configuration
 
@@ -49,9 +45,8 @@ Open **Settings** → **Tools** → **Branch Health Dashboard** to configure:
 | Setting | Default | Description |
 |---------|---------|-------------|
 | Stale Threshold (days) | `30` | Number of days without commits before a branch is considered stale |
-| Scan Interval (minutes) | `60` | How often to automatically re-scan branches |
-| Ignored Branches | `main, develop, master` | Comma-separated list of branches excluded from stale detection |
-| Enable Notifications | `true` | Show balloon notifications for stale branches and scan results |
+| Ignored Branches | `main, develop, master` | Comma-separated branch names excluded from scans and cleanup (matches local and `origin/` names) |
+| Enable Notifications | `true` | Show the scan summary and stale-branch notifications |
 
 ## 🎯 Usage
 
@@ -62,27 +57,26 @@ The health score (0–100) is computed from multiple factors:
 | Factor | Impact |
 |--------|--------|
 | Branch age | Up to −40 points (−15 aging, −25 stale) |
-| Activity rate | +10 (HIGH), +5 (MODERATE), −10 (INACTIVE) |
+| Activity (commits/day over the last 30 days) | +10 (≥1), +5 (≥0.3), 0 (≥0.05), −10 (below) |
 | Behind count | Up to −15 points based on how far behind the base branch |
-| Conflict risk | Up to −20 points based on common file overlap |
+| Conflict risk | Up to −20 points: files changed on both sides ÷ all changed files |
 
 **Thresholds:** ≥75 = 🟢 Healthy, ≥50 = 🟡 Aging, ≥25 = 🔴 Stale, <25 = ⚫ Dead
 
 ### Scanning Branches
-- **Manual:** Click **Scan Branches** in the tool window or use **VCS** → **Scan Branch Health**
-- **Automatic:** Runs at the configured scan interval in the background
+- Click **Scan Branches** in the tool window or use **VCS** → **Scan Branch Health**
+- Local and remote-tracking branches of the project's first Git repository are scanned; the base branch itself is skipped
 
 ### Cleaning Up
 - **VCS** → **Cleanup Stale Branches**
 - Shows a confirmation dialog listing branches to delete
-- Automatically protects `main`, `master`, and `develop` from deletion
-- Only deletes branches already merged into a protected branch
+- Never offers `main`, `master`, `develop`, your ignored branches, the current branch, or branches checked out in other worktrees
+- Only lists branches already merged into HEAD and deletes them with `git branch -d`
 
 ## 📋 Requirements
 
-- IntelliJ IDEA 2024.3+ (or any JetBrains IDE build 243–252.*)
-- Git4Idea plugin (bundled with all JetBrains IDEs)
-- Java 17+
+- IntelliJ IDEA 2023.2+ (or any JetBrains IDE build 232+)
+- Git plugin (bundled with all JetBrains IDEs)
 
 ## 🏗️ Building from Source
 

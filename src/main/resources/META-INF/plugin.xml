@@ -7,54 +7,47 @@
   <description><![CDATA[<h2>Monitor, score, and clean up your Git branches — right inside your IDE</h2>
 
 <p>
-  Branch Health Dashboard gives every Git branch a health score from 0 to 100.
-  It tracks branch age, monitors activity, predicts merge conflicts, and recommends
-  the best merge strategy — all without leaving your editor. Stop letting stale
-  branches silently accumulate risk.
+  Branch Health Dashboard gives every local and remote-tracking Git branch a health score from 0 to 100,
+  based on its age, recent activity, how far it is behind the base branch, and how many files it changes
+  that the base branch also changed. Stale branches stop silently accumulating risk.
 </p>
 
 <h3>Branch Health Scoring</h3>
 <ul>
-  <li><b>Health score (0–100)</b> — A single number that tells you how healthy each branch is, based on age, activity, behind-count, and conflict risk.</li>
-  <li><b>Color-coded status</b> — Healthy (≥75, green), Aging (≥50, yellow), Stale (≥25, orange), Dead (&lt;25, red).</li>
-  <li><b>Score breakdown</b> — Age (up to −40 pts), Activity (+10 to −10 pts), Behind count (up to −15 pts), Conflict risk (up to −20 pts).</li>
+  <li><b>Health score (0–100)</b> — Age (up to −40 pts), activity over the last 30 days (+10 to −10 pts), commits behind the base branch (up to −15 pts), overlap with base-branch changes (up to −20 pts).</li>
+  <li><b>Status</b> — Healthy (≥75), Aging (≥50), Stale (≥25), Dead (&lt;25).</li>
+  <li><b>Ahead/behind</b> — compared with <code>main</code>, <code>master</code> or <code>develop</code> (local first, then <code>origin/</code>).</li>
+  <li><b>Conflict risk</b> — files changed on both sides since the merge base.</li>
+  <li><b>Rebase advice</b> — REBASE, MERGE or EITHER, based on the ahead/behind counts.</li>
 </ul>
 
-<h3>Branch Monitoring</h3>
+<h3>Tool Window</h3>
 <ul>
-  <li><b>Age tracking</b> — See how old each branch is at a glance. Color-coded: Healthy ≤7 days, Aging 7–30 days, Stale &gt;30 days.</li>
-  <li><b>Activity heatmap</b> — Commits-per-day visualization with trend indicators for each branch.</li>
-  <li><b>Stale branch detection</b> — Configurable thresholds (7, 14, 30, 60, or 90 days) with balloon notifications when branches go stale.</li>
-  <li><b>Branch comparison</b> — Ahead/behind counts against the base branch so you know exactly how far each branch has drifted.</li>
+  <li><b>Sortable table</b> — health, age, activity, ahead/behind, conflict risk and advice per branch.</li>
+  <li><b>Filter by status</b> — Healthy, Aging, Stale or Dead.</li>
 </ul>
 
-<h3>Tool Window Dashboard</h3>
+<h3>Actions</h3>
 <ul>
-  <li><b>Sortable table</b> — Sort branches by health score, age, or activity.</li>
-  <li><b>Filter by status</b> — Show only Healthy, Aging, Stale, or Dead branches.</li>
-  <li><b>All branches in one view</b> — Local and remote branches displayed together with full metrics.</li>
+  <li><b>Scan Branch Health</b> — VCS menu or the tool window button; shows a summary and a stale-branch notification.</li>
+  <li><b>Cleanup Stale Branches</b> — lists local branches already merged into HEAD and deletes them with <code>git branch -d</code> after confirmation. <code>main</code>, <code>master</code>, <code>develop</code> and your ignored branches are never offered.</li>
 </ul>
 
+<h3>Settings</h3>
 <ul>
-  <li><b>Conflict prediction</b> — Detects common files across branches and assigns a risk level: LOW, MEDIUM, HIGH, or CRITICAL.</li>
-  <li><b>Rebase advisor</b> — Recommends the optimal merge strategy for each branch: REBASE, MERGE, or EITHER.</li>
-  <li><b>Cleanup automation</b> — Batch-delete merged branches with dry-run support. Protected branches (main, master, develop) are never removed.</li>
-  <li><b>Orphan commit detection</b> — Finds commits that are no longer reachable from any branch.</li>
-  <li><b>Enhanced notifications</b> — Team notifications and branch policy enforcement to keep everyone aligned.</li>
+  <li>Stale threshold (1–365 days), ignored branches, notifications on/off.</li>
 </ul>
 
 <h3>Requirements</h3>
 <ul>
-  <li>IntelliJ IDEA 2024.3 or later (builds 243–252.*)</li>
-  <li>Git4Idea plugin (bundled with IntelliJ IDEA)</li>
-  <li>Java 17+</li>
+  <li>IntelliJ IDEA 2023.2+ (or any JetBrains IDE with the bundled Git plugin)</li>
+  <li>Scans the first Git repository of the project</li>
 </ul>
 
 <h3>Support</h3>
 <ul>
-  <li><b>Documentation:</b> <a href="https://github.com/JirakJ/branch-health-dashboard/docs">github.com/JirakJ/branch-health-dashboard/docs</a></li>
+  <li><b>Documentation:</b> <a href="https://github.com/JirakJ/branch-health-dashboard">github.com/JirakJ/branch-health-dashboard</a></li>
   <li><b>Issue tracker:</b> <a href="https://github.com/JirakJ/branch-health-dashboard/issues">github.com/JirakJ/branch-health-dashboard/issues</a></li>
-  <li><b>Email:</b> <a href="mailto:support@jakubjirak.com">support@jakubjirak.com</a></li>
 </ul>]]></description>
 
   <depends>com.intellij.modules.platform</depends>

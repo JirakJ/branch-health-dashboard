@@ -120,3 +120,53 @@ class BranchHealthEngineTest {
         assertEquals(15, health.ageDays)
     }
 }
+
+class BranchHealthEngineConflictTest {
+
+    private val engine = BranchHealthEngine()
+
+    private fun branch() = BranchInfo(
+        name = "feature/x",
+        lastCommitDate = Instant.now(),
+        commitCount = 30,
+        author = "a",
+        isRemote = false,
+        isStale = false,
+        aheadBehind = AheadBehind(0, 0),
+    )
+
+    @Test
+    fun `overlapping changes produce conflict risk, penalty and issue`() {
+        val health = engine.analyzeBranch(branch(), setOf("a.kt", "b.kt"), "main", setOf("a.kt", "b.kt"))
+        assertEquals(1.0, health.conflictRisk!!.riskScore)
+        assertEquals("main", health.conflictRisk!!.conflictingBranch)
+        // 100 + 10 (30 commits / 30 days = HIGH) - 20 conflict = 90 -> clamped 90
+        assertEquals(90, health.healthScore)
+        assertTrue(health.issues.any { it.contains("conflicts with main") })
+    }
+
+    @Test
+    fun `disjoint changes have no conflict risk`() {
+        val health = engine.analyzeBranch(branch(), setOf("a.kt"), "main", setOf("b.kt"))
+        assertEquals(null, health.conflictRisk)
+    }
+
+    @Test
+    fun `activity is measured over the fixed window`() {
+        val health = engine.analyzeBranch(branch().copy(commitCount = 15))
+        assertEquals(0.5, health.activityRate)
+    }
+
+    @Test
+    fun `future commit dates do not produce negative age`() {
+        val health = engine.analyzeBranch(branch().copy(lastCommitDate = Instant.now().plus(3, ChronoUnit.DAYS)))
+        assertEquals(0, health.ageDays)
+    }
+
+    @Test
+    fun `isStale delegates to the configured threshold`() {
+        val strict = BranchHealthEngine(staleThresholdDays = 5)
+        assertTrue(strict.isStale(Instant.now().minus(6, ChronoUnit.DAYS)))
+        assertTrue(!strict.isStale(Instant.now().minus(4, ChronoUnit.DAYS)))
+    }
+}

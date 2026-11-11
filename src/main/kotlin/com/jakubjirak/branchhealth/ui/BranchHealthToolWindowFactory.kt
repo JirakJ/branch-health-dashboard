@@ -11,13 +11,9 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
-import java.awt.Component
-import java.util.Locale
 import javax.swing.JButton
 import javax.swing.JComboBox
 import javax.swing.JPanel
-import javax.swing.JTable
-import javax.swing.table.DefaultTableCellRenderer
 import javax.swing.table.DefaultTableModel
 
 class BranchHealthToolWindowFactory : ToolWindowFactory, DumbAware {
@@ -29,6 +25,37 @@ class BranchHealthToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 }
 
+/**
+ * Pure table-row logic for the Branch Health tool window, kept separate from Swing for testing.
+ */
+object BranchHealthRows {
+    val COLUMNS = arrayOf("Branch", "Status", "Health", "Age (days)", "Commits/day (30d)", "Ahead/Behind", "Conflict Risk", "Advice")
+    val COLUMN_CLASSES: Array<Class<*>> = arrayOf(
+        String::class.java, String::class.java, Integer::class.java, java.lang.Long::class.java,
+        java.lang.Double::class.java, String::class.java, String::class.java, String::class.java,
+    )
+    val FILTERS = arrayOf("All") + HealthLevel.entries.map { it.displayName }
+
+    fun filter(results: List<BranchHealth>, selected: String?): List<BranchHealth> {
+        val level = HealthLevel.entries.firstOrNull { it.displayName == selected } ?: return results
+        return results.filter { it.level == level }
+    }
+
+    fun toRow(health: BranchHealth): Array<Any> = arrayOf(
+        health.branch.name,
+        "${health.level.icon} ${health.level.displayName}",
+        health.healthScore,
+        health.ageDays,
+        Math.round(health.activityRate * ROUNDING) / ROUNDING,
+        "+${health.branch.aheadBehind.ahead} / -${health.branch.aheadBehind.behind}",
+        health.conflictRisk?.let { "${(it.riskScore * PERCENT).toInt()}% (${it.filePaths.size} files)" } ?: "None",
+        health.rebaseAdvice?.recommendation?.name ?: "N/A",
+    )
+
+    private const val ROUNDING = 100.0
+    private const val PERCENT = 100
+}
+
 class BranchHealthPanel(private val project: Project) : JPanel(BorderLayout()) {
 
     private val tableModel: DefaultTableModel
@@ -37,18 +64,17 @@ class BranchHealthPanel(private val project: Project) : JPanel(BorderLayout()) {
     private var allResults: List<BranchHealth> = emptyList()
 
     init {
-        val columnNames = arrayOf<Any>("Branch", "Health", "Age (days)", "Activity", "Conflict Risk", "Advice")
-        tableModel = object : DefaultTableModel(columnNames, 0) {
+        tableModel = object : DefaultTableModel(BranchHealthRows.COLUMNS, 0) {
             override fun isCellEditable(row: Int, column: Int): Boolean = false
+            override fun getColumnClass(columnIndex: Int): Class<*> = BranchHealthRows.COLUMN_CLASSES[columnIndex]
         }
 
         table = JBTable(tableModel).apply {
-            columnModel.getColumn(1).cellRenderer = HealthScoreRenderer()
             autoCreateRowSorter = true
+            emptyText.text = "No scan results yet. Click Scan Branches."
         }
 
-        // Filter toolbar
-        filterComboBox = JComboBox(arrayOf("All", "Healthy", "Aging", "Stale", "Dead"))
+        filterComboBox = JComboBox(BranchHealthRows.FILTERS)
         filterComboBox.addActionListener { applyFilter() }
 
         val scanButton = JButton("Scan Branches").apply {
@@ -56,7 +82,10 @@ class BranchHealthPanel(private val project: Project) : JPanel(BorderLayout()) {
                 val actionManager = com.intellij.openapi.actionSystem.ActionManager.getInstance()
                 val action = actionManager.getAction("com.jakubjirak.branchhealth.ScanBranchesAction")
                 if (action != null) {
-                    actionManager.tryToExecute(action, null, null, com.intellij.openapi.actionSystem.ActionPlaces.TOOLWINDOW_CONTENT, true)
+                    actionManager.tryToExecute(
+                        action, null, this@BranchHealthPanel,
+                        com.intellij.openapi.actionSystem.ActionPlaces.TOOLWINDOW_CONTENT, true,
+                    )
                 }
             }
         }
@@ -77,42 +106,8 @@ class BranchHealthPanel(private val project: Project) : JPanel(BorderLayout()) {
     }
 
     private fun applyFilter() {
-        val selectedFilter = filterComboBox.selectedItem as? String ?: "All"
-        val filtered = when (selectedFilter) {
-            "Healthy" -> allResults.filter { it.level == HealthLevel.HEALTHY }
-            "Aging" -> allResults.filter { it.level == HealthLevel.AGING }
-            "Stale" -> allResults.filter { it.level == HealthLevel.STALE }
-            "Dead" -> allResults.filter { it.level == HealthLevel.DEAD }
-            else -> allResults
-        }
-
         tableModel.rowCount = 0
-        filtered.forEach { health ->
-            tableModel.addRow(
-                arrayOf<Any>(
-                    health.branch.name,
-                    "${health.level.icon} ${health.healthScore}",
-                    health.ageDays.toString(),
-                    String.format(Locale.US, "%.2f/day", health.activityRate),
-                    health.conflictRisk?.let { "${(it.riskScore * 100).toInt()}%" } ?: "N/A",
-                    health.rebaseAdvice?.recommendation?.name ?: "N/A",
-                ),
-            )
-        }
-    }
-}
-
-private class HealthScoreRenderer : DefaultTableCellRenderer() {
-    override fun getTableCellRendererComponent(
-        table: JTable,
-        value: Any?,
-        isSelected: Boolean,
-        hasFocus: Boolean,
-        row: Int,
-        column: Int,
-    ): Component {
-        val component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column)
-        horizontalAlignment = CENTER
-        return component
+        BranchHealthRows.filter(allResults, filterComboBox.selectedItem as? String)
+            .forEach { tableModel.addRow(BranchHealthRows.toRow(it)) }
     }
 }
