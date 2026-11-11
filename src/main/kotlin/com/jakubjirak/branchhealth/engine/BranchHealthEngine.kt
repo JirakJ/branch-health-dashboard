@@ -23,7 +23,7 @@ class BranchHealthEngine(
     private val conflictPredictor = ConflictPredictor()
     private val rebaseAdvisor = RebaseAdvisor()
 
-    private val cache = mutableMapOf<String, BranchHealth>()
+    private val cache = java.util.concurrent.ConcurrentHashMap<String, BranchHealth>()
 
     /**
      * Analyze a single branch and produce a health assessment.
@@ -34,8 +34,8 @@ class BranchHealthEngine(
         targetBranch: String = "main",
         targetFiles: Set<String> = emptySet(),
     ): BranchHealth {
-        val ageDays = ageAnalyzer.calculateAgeDays(branch.lastCommitDate)
-        val activityRate = activityAnalyzer.calculateActivityRate(branch.commitCount, ageDays.coerceAtLeast(1))
+        val ageDays = ageAnalyzer.calculateAgeDays(branch.lastCommitDate).coerceAtLeast(0)
+        val activityRate = activityAnalyzer.calculateActivityRate(branch.commitCount, ACTIVITY_WINDOW_DAYS)
         val issues = mutableListOf<String>()
 
         // Age penalty
@@ -53,13 +53,13 @@ class BranchHealthEngine(
         // Behind penalty
         val behindPenalty = rebaseAdvisor.calculateBehindPenalty(branch.aheadBehind.behind)
         if (branch.aheadBehind.behind > 0) {
-            issues.add("Branch is ${branch.aheadBehind.behind} commits behind ${targetBranch}")
+            issues.add("Branch is ${branch.aheadBehind.behind} commits behind $targetBranch")
         }
 
         // Conflict risk
         val conflictRisk = if (changedFiles.isNotEmpty()) {
             val risk = conflictPredictor.predictConflict(branch.name, changedFiles, targetBranch, targetFiles)
-            if (risk != null && risk.riskScore > 0.3) {
+            if (risk != null && risk.riskScore > CONFLICT_ISSUE_THRESHOLD) {
                 issues.add("Potential conflicts with ${risk.conflictingBranch} (${risk.filePaths.size} files)")
             }
             risk
@@ -114,6 +114,9 @@ class BranchHealthEngine(
         }
     }
 
+    /** Whether a branch whose last commit is [lastCommitDate] exceeds the stale threshold. */
+    fun isStale(lastCommitDate: java.time.Instant): Boolean = ageAnalyzer.isStale(lastCommitDate)
+
     /**
      * Get cached result for a branch.
      */
@@ -138,6 +141,10 @@ class BranchHealthEngine(
     companion object {
         private val LOG = Logger.getInstance(BranchHealthEngine::class.java)
 
+        /** Activity is measured as commits per day over this many trailing days. */
+        const val ACTIVITY_WINDOW_DAYS = 30L
+
+        private const val CONFLICT_ISSUE_THRESHOLD = 0.3
         private const val BASE_SCORE = 100
         private const val MIN_SCORE = 0
         private const val MAX_SCORE = 100

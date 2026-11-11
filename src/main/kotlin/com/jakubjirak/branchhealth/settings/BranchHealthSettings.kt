@@ -14,7 +14,6 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 class BranchHealthSettings : PersistentStateComponent<BranchHealthSettings> {
 
     var staleThresholdDays: Int = DEFAULT_STALE_THRESHOLD_DAYS
-    var scanIntervalMinutes: Int = DEFAULT_SCAN_INTERVAL_MINUTES
     var ignoredBranches: String = DEFAULT_IGNORED_BRANCHES
     var enableNotifications: Boolean = true
 
@@ -30,7 +29,6 @@ class BranchHealthSettings : PersistentStateComponent<BranchHealthSettings> {
 
     companion object {
         const val DEFAULT_STALE_THRESHOLD_DAYS = 30
-        const val DEFAULT_SCAN_INTERVAL_MINUTES = 60
         const val DEFAULT_IGNORED_BRANCHES = "main, develop, master"
 
         fun getInstance(): BranchHealthSettings =
