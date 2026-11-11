@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2026.9.0] - 2026-11-11
+
 ### Fixed
 - Commit dates were parsed from `%(committerdate:iso)` with a broken pattern, so every branch was
   treated as just committed; dates now come from `iso-strict` and branches with unparseable dates are skipped.
