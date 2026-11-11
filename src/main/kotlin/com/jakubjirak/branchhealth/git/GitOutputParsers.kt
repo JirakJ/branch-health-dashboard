@@ -5,7 +5,7 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 
-/** A branch ref as listed by `git for-each-ref`. */
+/** A branch ref as listed by `git branch --all --format=...`. */
 data class BranchRef(
     /** Display name: `feature/x` for local branches, `origin/feature/x` for remote-tracking ones. */
     val name: String,
@@ -21,7 +21,7 @@ data class BranchRef(
  */
 object GitOutputParsers {
 
-    /** `git for-each-ref` format understood by [parseBranchRef]. */
+    /** `git branch --format` understood by [parseBranchRef]. */
     const val BRANCH_FORMAT = "%(refname)|%(committerdate:iso-strict)|%(authorname)"
 
     /** Branches that are never offered for deletion, regardless of settings. */
@@ -32,7 +32,7 @@ object GitOutputParsers {
     private const val FIELD_COUNT = 3
 
     /**
-     * Parses one line of `git for-each-ref --format=BRANCH_FORMAT refs/heads refs/remotes`.
+     * Parses one line of `git branch --all --format=BRANCH_FORMAT`.
      * Returns `null` for symbolic `HEAD` refs, ignored branches, and malformed lines or dates.
      */
     fun parseBranchRef(line: String, ignoredBranches: List<String>): BranchRef? {

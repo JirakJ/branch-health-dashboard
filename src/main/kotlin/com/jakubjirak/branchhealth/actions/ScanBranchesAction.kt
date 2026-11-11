@@ -66,7 +66,7 @@ class ScanBranchesAction : AnAction() {
         val git = GitRunner(project, root)
 
         indicator.text = "Collecting branch information..."
-        val allRefs = git.run(GitCommand.FOR_EACH_REF, "--format=${GitOutputParsers.BRANCH_FORMAT}", "refs/heads", "refs/remotes")
+        val allRefs = git.run(GitCommand.BRANCH, "--all", "--format=${GitOutputParsers.BRANCH_FORMAT}")
             ?.mapNotNull { GitOutputParsers.parseBranchRef(it, emptyList()) }
             ?: return emptyList()
         val base = GitOutputParsers.pickBaseBranch(allRefs)
