@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- Commit dates were parsed from `%(committerdate:iso)` with a broken pattern, so every branch was
+  treated as just committed; dates now come from `iso-strict` and branches with unparseable dates are skipped.
+- Ahead/behind, recent commit count and conflict risk were never collected (always 0 / none), so every
+  branch got the inactivity penalty and "EITHER" advice. The scan now runs `git rev-list` and
+  `git diff --name-only` against the base branch (`main`/`master`/`develop`, local first, then `origin/`).
+- Activity is now commits per day over the last 30 days instead of commits divided by days since the last commit.
+- Remote-tracking branches were never recognised as remote (`origin/HEAD` showed up as a branch called `origin`).
+- Health, age and activity columns sorted as text; they are now numeric. Added Status and Ahead/Behind columns.
+- Notifications and table refresh now happen on the EDT after the background scan.
+- Cleanup no longer runs git on the EDT, honours the ignored-branches setting and skips branches checked
+  out in other worktrees.
+
+### Removed
+- Non-functional "Scan interval" setting (there is no background scanning).
+- Description/README claims for features that never shipped (activity heatmap, orphan commit detection,
+  team notifications/policy enforcement, dry-run mode), the unused message bundle, the unused
+  conflict-risk notification, the leftover ProGuard obfuscation task and MARKETPLACE*.md drafts.
+
 ## [2026.8.0] - 2026-11-10
 
 ### Changed

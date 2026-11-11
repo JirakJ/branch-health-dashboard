@@ -32,25 +32,6 @@ class BranchHealthNotifier(private val project: Project) {
         }
     }
 
-    fun notifyConflictRisk(branchHealth: BranchHealth) {
-        val conflictRisk = branchHealth.conflictRisk ?: return
-        if (!BranchHealthSettings.getInstance().enableNotifications) return
-
-        try {
-            NotificationGroupManager.getInstance()
-                .getNotificationGroup("Branch Health Dashboard")
-                .createNotification(
-                    "Conflict Risk Detected",
-                    "Branch \"${branchHealth.branch.name}\" has potential merge conflicts with " +
-                        "\"${conflictRisk.conflictingBranch}\" (${conflictRisk.filePaths.size} common files).",
-                    NotificationType.WARNING,
-                )
-                .notify(project)
-        } catch (e: Exception) {
-            LOG.warn("Failed to send conflict risk notification", e)
-        }
-    }
-
     fun notifyScanComplete(results: List<BranchHealth>) {
         if (!BranchHealthSettings.getInstance().enableNotifications) return
 
